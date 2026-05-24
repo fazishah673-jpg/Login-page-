@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Login Page</title>
+
+  <style>
+    body{
+      margin:0;
+      padding:0;
+      font-family:Arial;
+      background:#0f172a;
+      display:flex;
+      justify-content:center;
+      align-items:center;
+      height:100vh;
+    }
+
+    .login-box{
+      background:white;
+      padding:30px;
+      width:320px;
+      border-radius:12px;
+      box-shadow:0 0 15px rgba(0,0,0,0.3);
+    }
+
+    h2{
+      text-align:center;
+      margin-bottom:20px;
+    }
+
+    input{
+      width:100%;
+      padding:12px;
+      margin-top:10px;
+      border:1px solid #ccc;
+      border-radius:8px;
+      font-size:16px;
+    }
+
+    button{
+      width:100%;
+      padding:12px;
+      margin-top:20px;
+      border:none;
+      background:#2563eb;
+      color:white;
+      font-size:16px;
+      border-radius:8px;
+      cursor:pointer;
+    }
+
+    button:hover{
+      background:#1d4ed8;
+    }
+
+    #msg{
+      text-align:center;
+      margin-top:15px;
+      color:red;
+      font-weight:bold;
+    }
+  </style>
+</head>
+
+<body>
+
+<div class="login-box">
+
+  <h2>Login</h2>
+
+  <input type="text" id="number" placeholder="Enter Number">
+
+  <input type="password" id="password" placeholder="Enter Password">
+
+  <button onclick="login()">Login</button>
+
+  <div id="msg"></div>
+
+</div>
+
+<script>
+
+async function login(){
+
+  const number = document.getElementById("number").value.trim();
+  const password = document.getElementById("password").value.trim();
+
+  const msg = document.getElementById("msg");
+
+  msg.innerHTML = "Checking...";
+
+  // Google Sheet CSV URL
+  const sheetURL =
+  "https://docs.google.com/spreadsheets/d/e/2PACX-1vQwEKKSkQ9iffEDiOFBIg3VseyPzNKB3IZ_6yFwN-G42ehfIQViqnXaaQa011A3w1-JebGCBVn3kuy2/pub?output=csv";
+
+  try{
+
+    const response = await fetch(sheetURL);
+
+    const data = await response.text();
+
+    const rows = data.split("\n");
+
+    let found = false;
+
+    for(let i=1; i<rows.length; i++){
+
+      const cols = rows[i].split(",");
+
+      // Column B
+      const sheetNumber = cols[1]?.replace(/"/g,'').trim();
+
+      // Column C
+      const sheetPassword = cols[2]?.replace(/"/g,'').trim();
+
+      if(number === sheetNumber && password === sheetPassword){
+
+        found = true;
+
+        // NEXT PAGE
+        window.location.href = "dashboard.html";
+
+        break;
+      }
+    }
+
+    if(!found){
+      msg.innerHTML = "Invalid Details";
+    }
+
+  }catch(error){
+
+    msg.innerHTML = "Error Loading Data";
+
+    console.log(error);
+
+  }
+
+}
+
+</script>
+
+</body>
+</html>
